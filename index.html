@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Heroic Abilities Worksheet | Can You...? Superhero Quiz</title>
+    <!-- html2pdf bundle (html2canvas + jsPDF) for full-content capture with page breaks -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* GLOBAL BACKGROUND: FRAME IMAGE (рамочка обрамление всего содержимого) */
+        body {
+            background-color: #1a1a2e; /* fallback deep colour */
+            font-family: 'Segoe UI', 'Comic Neue', 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif;
+            line-height: 1.4;
+        }
+
+        /* .frame — это главная обёртка, которая создаёт эффект рамочки с заданным фоном.
+           Изображение-рамка оборачивает весь контент. */
+        .frame {
+            background-image: url('Photos/Screenshot_20260407_005538_Pinterest.jpg');
+            background-size: cover;        /* покрывает всю область рамки */
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: local;
+            padding: 2rem 1.5rem;
+            border-radius: 48px 32px 48px 32px;   /* мягкие углы, стилизация рамки */
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255, 255, 255, 0.2);
+            margin: 20px;
+            transition: all 0.2s;
+        }
+
+        /* внутренний контейнер для контента — прозрачный, чтобы фоновый узор рамки просвечивал между карточками */
+        .worksheet-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            backdrop-filter: none; /* не размываем рамку, сохраняем её чёткой */
+        }
+
+        /* Заголовок страницы — яркий, читаемый, не сливается */
+        .main-title {
+            text-align: center;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            color: #FFE484;
+            text-shadow: 4px 4px 0 #B44C1A, 2px 2px 12px #000000aa;
+            background: rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            width: auto;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            backdrop-filter: blur(2px);
+            margin-left: auto;
+            margin-right: auto;
+            font-family: inherit;
+        }
+
+        /* Сетка карточек: адаптивная, каждая карточка имеет одинаковую структуру */
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 28px;
+            margin-top: 20px;
+        }
+
+        /* Стиль карточки героя: тёмный полупрозрачный фон для контраста с ярким текстом */
+        .hero-card {
+            background: rgba(10, 10, 20, 0.85);
+            backdrop-filter: blur(3px);
+            border-radius: 42px;
+            padding: 1.2rem 1rem 1.5rem 1rem;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s;
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 215, 0, 0.3);
+            border: 1px solid rgba(255, 210, 90, 0.5);
+        }
+
+        .hero-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 25px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Все фото строго одинакового размера (квадратные, обрезаются красиво) */
+        .hero-img {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 4px solid #FFD966;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+            background-color: #2c2c3a;
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+
+        /* Имя персонажа: крупное, яркое, контрастное */
+        .hero-name {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 12px 0 12px 0;
+            color: #FFE484;
+            text-shadow: 2px 2px 0 #9B4B1A;
+            letter-spacing: 1px;
+            word-break: keep-all;
+            background: linear-gradient(135deg, #FFD966, #FFB347);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: #FFD966;
+            text-shadow: 1px 1px 2px black;
+        }
+
+        /* Блок вопроса: яркий читаемый шрифт, не сливается с фоном карточки */
+        .question-item {
+            background: rgba(0, 0, 0, 0.65);
+            border-radius: 32px;
+            padding: 12px 10px;
+            margin: 14px 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFF9E0;
+            text-align: center;
+            line-height: 1.4;
+            box-shadow: inset 0 0 3px rgba(255, 245, 180, 0.7), 0 3px 6px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(2px);
+            transition: 0.1s;
+        }
+
+        /* Эмодзи и текст вопроса: крупно, с запасом */
+        .question-item {
+            font-size: 1.2rem;
+            word-break: break-word;
+        }
+
+        /* кнопка скачивания — заметная, стильная */
+        .download-btn {
+            display: block;
+            margin: 45px auto 20px auto;
+            background: linear-gradient(95deg, #FFB347, #FF7E05);
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.7rem;
+            font-weight: bold;
+            font-family: inherit;
+            color: #1F1A0C;
+            border-radius: 70px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 0 0 2px #FFE484 inset;
+            transition: 0.15s linear;
+            width: fit-content;
+            letter-spacing: 1px;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.02);
+            background: linear-gradient(95deg, #FFC107, #FF8C00);
+            box-shadow: 0 15px 25px black;
+            color: white;
+        }
+
+        /* улучшение читаемости для длинных вопросов */
+        @media (max-width: 650px) {
+            .hero-img {
+                width: 140px;
+                height: 140px;
+            }
+            .hero-name {
+                font-size: 1.7rem;
+            }
+            .question-item {
+                font-size: 1rem;
+                padding: 10px 6px;
+            }
+            .frame {
+                padding: 1rem;
+                margin: 10px;
+            }
+            .main-title {
+                font-size: 1.9rem;
+            }
+        }
+
+        /* для печати / pdf — кнопка не дублируется, карточки не разрываются */
+        @media print {
+            .download-btn {
+                display: none;
+            }
+            .hero-card {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            body {
+                background: white;
+            }
+        }
+
+        /* эффект лёгкого свечения для текста */
+        .question-item {
+            text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #FFE4B5;
+            background: rgba(0,0,0,0.5);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 6px 16px;
+            border-radius: 40px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="frame">
+    <div class="worksheet-container">
+        <div style="display: flex; justify-content: center;">
+            <h1 class="main-title">⚡ CAN YOU...? ⚡<br> HEROIC ABILITIES WORKSHEET</h1>
+        </div>
+
+        <!-- сетка карточек героев -->
+        <div class="hero-grid" id="heroCardsGrid"></div>
+
+        <div style="display: flex; justify-content: center;">
+            <button class="download-btn" id="pdfDownloadBtn">📥 DOWNLOAD PDF (FULL WORKSHEET) 📄</button>
+        </div>
+        <footer>✨ Each hero has two super questions — imagine if they could! ✨</footer>
+    </div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // ДАННЫЕ ПЕРСОНАЖЕЙ: имя, ссылка на фото (все фото одинакового размера благодаря CSS)
+    // Вопросы на английском, два на каждого, с кастомными эмодзи
+    // --------------------------------------------------------------
+    const heroesData = [
+        {
+            name: "Thor",
+            imgSrc: "Photos/Screenshot_20260404_141100_Pinterest.jpg",
+            questions: [
+                "⚡📱 Can you charge my phone just by holding it for a second?",
+                "⚡🥛 Can you heat up a cup of cold milk with your lightning powers?"
+            ]
+        },
+        {
+            name: "Spider-Man",
+            imgSrc: "Photos/Screenshot_20260404_141131_Pinterest.png",
+            questions: [
+                "🕸️🛏️ Can you make a giant spider-web swing in my bedroom?",
+                "🕸️🤸‍♂️ Can you use your webs to make a big trampoline for us to jump on?"
+            ]
+        },
+        {
+            name: "Hulk",
+            imgSrc: "Photos/Screenshot_20260404_141201_Pinterest.png",
+            questions: [
+                "✏️🎨🔍 Can you draw a tiny picture with a very small pencil?",
+                "🤲🌷 Can you hold something delicate without crushing it?"
+            ]
+        },
+        {
+            name: "Iron Man",
+            imgSrc: "Photos/Screenshot_20260404_141223_Pinterest.png",
+            questions: [
+                "🔫🏟️ Can you turn my room into a laser tag arena with your repulsor blasts?",
+                "⚛️🚀 Can you make my bedroom zero gravity with your arc reactor?"
+            ]
+        },
+        {
+            name: "Black Panther",
+            imgSrc: "Photos/Screenshot_20260404_141301_Pinterest.png",
+            questions: [
+                "👻🐈 Can you turn invisible and scare my cat at home?",
+                "🍕 Can you cut a pizza into perfect slices with your sharp claws?"
+            ]
+        },
+        {
+            name: "Ant-Man",
+            imgSrc: "Photos/Screenshot_20260404_141326_Pinterest.png",
+            questions: [
+                "🚗🫨🏠 Can you get very small and drive my toy car around the house?",
+                "🤏✨ Can you shrink and whisper the correct answers to me during my math test?"
+            ]
+        },
+        {
+            name: "Evil Minion",
+            imgSrc: "Photos/Screenshot_20260404_141413_Pinterest.png",
+            questions: [
+                "🍌🎵 Can you sing the \"Banana Song\" all day long?",
+                "🎒👻 Can you hide inside my backpack and scare my friends?"
+            ]
+        },
+        {
+            name: "Harry Potter",
+            imgSrc: "Photos/Screenshot_20260404_141439_Pinterest.png",
+            questions: [
+                "✏️🪄 Can you turn my pencil into a wand?",
+                "✨😊 Can you help me make my day better with a little magic?"
+            ]
+        },
+        {
+            name: "Dobby",
+            imgSrc: "Photos/Screenshot_20260404_141504_Pinterest.png",
+            questions: [
+                "📚😂 Can you turn my maths textbook into a funny comic book?",
+                "✏️💃 Can you make all the pencils in the classroom dance?"
+            ]
+        },
+        {
+            name: "Doctor Strange",
+            imgSrc: "Photos/Screenshot_20260404_141639_Pinterest.png",
+            questions: [
+                "☁️🛏️ Can you create a giant fluffy cloud in my bedroom?",
+                "🌀🏍️ Can you open a portal to the motorcycle racing track in my bedroom?"
+            ]
+        },
+        {
+            name: "Luke Skywalker",
+            imgSrc: "Photos/Screenshot_20260404_141801_Pinterest.png",
+            questions: [
+                "🌌🧸 Can you use the Force to make my toys float in the air?",
+                "⚔️✨ Can you give me a lightsaber that sparkles when I swing it?"
+            ]
+        },
+        {
+            name: "Pikachu",
+            imgSrc: "Photos/Screenshot_20260404_141826_Pinterest.png",
+            questions: [
+                "⚡💡 Can you light up a light bulb with your Thunderbolt?",
+                "⚡🖊️😂 Can you use your lightning bolt-shaped tail to draw a funny picture for me?"
+            ]
+        },
+        {
+            name: "Superman",
+            imgSrc: "Photos/Screenshot_20260404_141855_Pinterest.png",
+            questions: [
+                "🍿🏔️ Can you make a giant mountain of popcorn with your heat vision?",
+                "🎈💨🎉 Can you inflate all the balloons for a birthday party with your super breath?"
+            ]
+        },
+        {
+            name: "Elsa",
+            imgSrc: "Photos/Screenshot_20260404_142009_Pinterest.png",
+            questions: [
+                "❄️🫧🧥 Can you make a tiny snowflake that never melts, so I can keep it in my pocket forever?",
+                "🍦☀️ Can you use your ice powers to keep my ice cream from melting on a sunny day?"
+            ]
+        }
+    ];
+
+    // Получаем контейнер, куда будем динамически вставлять карточки
+    const gridContainer = document.getElementById("heroCardsGrid");
+
+    // Функция создания карточки для каждого героя (единый размер фото, крупные вопросы)
+    function buildHeroCard(hero) {
+        const card = document.createElement("div");
+        card.className = "hero-card";
+
+        // Изображение: одинаковый размер благодаря CSS (180x180)
+        const img = document.createElement("img");
+        img.className = "hero-img";
+        img.src = hero.imgSrc;
+        img.alt = hero.name;
+        // fallback на случай, если фото отсутствует — placeholder с героической заглушкой, но сохраняем размер
+        img.onerror = function() {
+            this.onerror = null;
+            this.src = "https://placehold.co/180x180?text=" + encodeURIComponent(hero.name) + "&font=montserrat";
+            // дополнительно стилизуем заглушку, чтобы оставался ярким фон
+            this.style.backgroundColor = "#2d2d44";
+            this.style.objectFit = "cover";
+        };
+
+        // Имя персонажа (крупный шрифт, яркий)
+        const nameEl = document.createElement("h2");
+        nameEl.className = "hero-name";
+        nameEl.textContent = hero.name;
+
+        // Добавляем вопросы (два элемента)
+        const question1 = document.createElement("div");
+        question1.className = "question-item";
+        question1.textContent = hero.questions[0];
+
+        const question2 = document.createElement("div");
+        question2.className = "question-item";
+        question2.textContent = hero.questions[1];
+
+        // Сборка карточки
+        card.appendChild(img);
+        card.appendChild(nameEl);
+        card.appendChild(question1);
+        card.appendChild(question2);
+
+        return card;
+    }
+
+    // Отрисовка всех карточек
+    heroesData.forEach(hero => {
+        const cardElement = buildHeroCard(hero);
+        gridContainer.appendChild(cardElement);
+    });
+
+    // ================= ФУНКЦИЯ СКАЧИВАНИЯ PDF =================
+    // Используем html2pdf.js для полного захвата всей области .frame
+    // Включаем фон-рамочку, все карточки, тексты и изображения.
+    // Настройки: высокое качество, автоматическое разбиение на страницы A4, сохранение всех стилей.
+    const downloadBtn = document.getElementById("pdfDownloadBtn");
+
+    async function generateAndDownloadPDF() {
+        // Элемент, который мы захватываем полностью — это .frame (рамка + весь контент внутри)
+        const elementToCapture = document.querySelector('.frame');
+        if (!elementToCapture) return;
+
+        // Показываем лёгкий индикатор (необязательно)
+        const originalBtnText = downloadBtn.innerText;
+        downloadBtn.innerText = "⏳ Generating PDF, please wait...";
+        downloadBtn.disabled = true;
+        downloadBtn.style.opacity = "0.7";
+
+        try {
+            // Опции для идеального PDF с фоном, разбивкой и крупным шрифтом
+            const opt = {
+                margin:        [0.6, 0.6, 0.6, 0.6],  // top, right, bottom, left (mm)
+                filename:     'Superhero_CanYou_Worksheet.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { 
+                    scale: 2.5,                // высокое разрешение для чётких текстов и фона
+                    useCORS: true,              // поддержка локальных картинок (CORS не помеха)
+                    logging: false,
+                    letterRendering: true,
+                    backgroundColor: null       // сохраняем прозрачность и фон рамки
+                },
+                jsPDF:        { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait'     // книжная ориентация, удобно для рабочего листа
+                },
+                pagebreak:    { mode: ['css', 'legacy'] } // автоматический разрыв страниц, если контент длинный
+            };
+            
+            // Используем html2pdf с опциями
+            await html2pdf().set(opt).from(elementToCapture).save();
+        } catch (error) {
+            console.error("PDF generation error: ", error);
+            alert("Sorry, PDF could not be generated. Check console for details. But you can still use print.");
+        } finally {
+            downloadBtn.innerText = originalBtnText;
+            downloadBtn.disabled = false;
+            downloadBtn.style.opacity = "1";
+        }
+    }
+
+    // Привязываем событие к кнопке
+    downloadBtn.addEventListener("click", generateAndDownloadPDF);
+
+    // Дополнительная проверка: предупреждение, если фоновое изображение рамки не загружено
+    // (не критично, но помогает убедиться, что фон присутствует)
+    window.addEventListener("load", () => {
+        // Проверяем, загружено ли фоновое изображение рамки (не обязательно, но вежливо)
+        const frameDiv = document.querySelector('.frame');
+        if (frameDiv) {
+            const bgImage = window.getComputedStyle(frameDiv).backgroundImage;
+            if (bgImage === 'none' || bgImage === '') {
+                console.warn("Background frame image not found. Make sure path 'Photos/Screenshot_20260407_005538_Pinterest.jpg' exists.");
+            } else {
+                // всё ок
+            }
+        }
+        // Дополнительно: все изображения персонажей пытаемся прогрузить, чтобы в PDF они отображались
+        const allImgs = document.querySelectorAll('.hero-img');
+        let loadedCount = 0;
+        const totalImgs = allImgs.length;
+        function imgLoaded() {
+            loadedCount++;
+            if (loadedCount === totalImgs && totalImgs > 0) {
+                // все фото готовы (не обязательно для PDF, но приятно)
+            }
+        }
+        allImgs.forEach(img => {
+            if (img.complete) imgLoaded();
+            else img.addEventListener('load', imgLoaded);
+            img.addEventListener('error', () => {
+                // уже есть fallback, просто отмечаем
+                imgLoaded();
+            });
+        });
+    });
+</script>
+
+<!-- 
+    Инструкция для полного функционирования:
+    1. Разместите HTML файл в папке, где есть подпапка "Photos", содержащая все изображения:
+        - Screenshot_20260407_005538_Pinterest.jpg (фон-рамочка)
+        - Screenshot_20260404_141100_Pinterest.jpg (Thor)
+        - Screenshot_20260404_141131_Pinterest.png (Spider-Man)
+        - ... и остальные в точности по путям, указанным в коде.
+    2. Если каких-то фото нет, код автоматически подставит заглушку с именем персонажа, сохраняя размер.
+    3. При нажатии кнопки "DOWNLOAD PDF" библиотека html2pdf.js захватит ВСЮ область .frame 
+       (включая фоновое изображение-рамочку, все карточки, крупный текст) и сгенерирует многостраничный PDF 
+       с автоматическими разрывами страниц, высоким качеством и полным стилем.
+    4. Все карточки имеют одинаковый размер фото, яркий видимый шрифт на тёмном подложке, не сливается с фоном.
+    5. Каждый герой имеет ровно два вопроса с "Can you...?" согласно вашему описанию.
+-->
+</body>
+</html>
