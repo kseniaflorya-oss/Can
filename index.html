@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heroic Worksheet – для печати и PDF</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #2c2a2a;
+            font-family: 'Georgia', 'Times New Roman', Times, serif;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        /* РАМКА С УМЕНЬШЕННЫМ ФОНОМ */
+        .frame {
+            background-image: url('Photos/Screenshot_20260407_005538_Pinterest.jpg');
+            background-size: 33% auto;
+            background-repeat: repeat;
+            background-color: #fef3da;
+            padding: 2rem 1.5rem;
+            border-radius: 36px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.4);
+            width: 100%;
+        }
+        .worksheet-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            background: rgba(250, 245, 235, 0.94);
+            border-radius: 28px;
+            padding: 1.5rem;
+        }
+        .main-title {
+            text-align: center;
+            font-size: 2.4rem;
+            background: #eeddbb;
+            display: inline-block;
+            width: auto;
+            padding: 0.4rem 2rem;
+            border-radius: 60px;
+            margin-bottom: 1.8rem;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 28px;
+            margin-top: 20px;
+        }
+        .hero-card {
+            background: #fffef7;
+            border-radius: 32px;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+            border: 1px solid #e2cfaa;
+        }
+        .hero-img {
+            width: 160px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #c9aa6f;
+            background: #f3e9ce;
+            margin-bottom: 15px;
+        }
+        .hero-name {
+            font-size: 1.9rem;
+            font-weight: bold;
+            color: #2b4f2b;
+            border-bottom: 2px solid #e2cfaa;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        .question-item {
+            background: #fdf8ed;
+            border-radius: 28px;
+            padding: 12px;
+            margin: 14px 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-left: 6px solid #b8860b;
+        }
+        /* КНОПКИ */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 35px auto 20px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: #3d5a3d;
+            padding: 12px 28px;
+            font-size: 1.2rem;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.1s;
+        }
+        .btn:hover {
+            background: #2c482c;
+            transform: scale(1.02);
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            background: #e9ddbc;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 6px 20px;
+            border-radius: 40px;
+        }
+
+        /* ========== СТИЛИ ДЛЯ ПЕЧАТИ (ВАЖНО ДЛЯ БУМАЖНОЙ ВЕРСИИ) ========== */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            .frame {
+                background-image: url('Photos/Screenshot_20260407_005538_Pinterest.jpg');
+                background-size: 33% auto;
+                background-repeat: repeat;
+                background-color: #fef3da;
+                -webkit-print-color-adjust: exact;  /* принудительно печатаем фон */
+                print-color-adjust: exact;
+                margin: 0;
+                padding: 1rem;
+                border-radius: 0;
+                box-shadow: none;
+            }
+            .worksheet-container {
+                max-width: 100%;
+                background: rgba(250, 245, 235, 0.96);
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .hero-card {
+                break-inside: avoid;           /* не разрывать карточку между страницами */
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+            .btn {
+                display: none;                 /* скрыть обе кнопки при печати */
+            }
+            .hero-img {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .main-title, .hero-name, .question-item {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="frame" id="pdfCapture">
+    <div class="worksheet-container">
+        <div style="text-align:center;">
+            <h1 class="main-title">⚡ CAN YOU...? ⚡<br>HEROIC ABILITIES WORKSHEET</h1>
+        </div>
+        <div class="hero-grid" id="heroGrid"></div>
+        
+        <div class="buttons">
+            <button class="btn" id="printBtn">🖨️ Распечатать / Сохранить как PDF</button>
+            <!-- Вторая кнопка (html2pdf) – опционально, если хотите оставить -->
+            <button class="btn" id="pdfBtn">⬇️ Скачать PDF (экспериментально)</button>
+        </div>
+        
+        <footer>✨ Each hero answers two “Can you…?” questions ✨</footer>
+    </div>
+</div>
+
+<!-- Подключаем html2pdf только для второй кнопки (если нужна) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<script>
+    // ДАННЫЕ ГЕРОЕВ (Thor с новым фото)
+    const heroes = [
+        { name: "Thor", img: "Photos/Screenshot_20260408_004618_Pinterest.png", q1: "⚡📱 Can you charge my phone just by holding it for a second?", q2: "⚡🥛 Can you heat up a cup of cold milk with your lightning powers?" },
+        { name: "Spider-Man", img: "Photos/Screenshot_20260404_141131_Pinterest.png", q1: "🕸️🛏️ Can you make a giant spider-web swing in my bedroom?", q2: "🕸️🤸‍♂️ Can you use your webs to make a big trampoline for us to jump on?" },
+        { name: "Hulk", img: "Photos/Screenshot_20260404_141201_Pinterest.png", q1: "✏️🎨🔍 Can you draw a tiny picture with a very small pencil?", q2: "🤲🌷 Can you hold something delicate without crushing it?" },
+        { name: "Iron Man", img: "Photos/Screenshot_20260404_141223_Pinterest.png", q1: "🔫🏟️ Can you turn my room into a laser tag arena with your repulsor blasts?", q2: "⚛️🚀 Can you make my bedroom zero gravity with your arc reactor?" },
+        { name: "Black Panther", img: "Photos/Screenshot_20260404_141301_Pinterest.png", q1: "👻🐈 Can you turn invisible and scare my cat at home?", q2: "🍕 Can you cut a pizza into perfect slices with your sharp claws?" },
+        { name: "Ant-Man", img: "Photos/Screenshot_20260404_141326_Pinterest.png", q1: "🚗🫨🏠 Can you get very small and drive my toy car around the house?", q2: "🤏✨ Can you shrink and whisper the correct answers to me during my math test?" },
+        { name: "Evil Minion", img: "Photos/Screenshot_20260404_141413_Pinterest.png", q1: "🍌🎵 Can you sing the \"Banana Song\" all day long?", q2: "🎒👻 Can you hide inside my backpack and scare my friends?" },
+        { name: "Harry Potter", img: "Photos/Screenshot_20260404_141439_Pinterest.png", q1: "✏️🪄 Can you turn my pencil into a wand?", q2: "✨😊 Can you help me make my day better with a little magic?" },
+        { name: "Dobby", img: "Photos/Screenshot_20260404_141504_Pinterest.png", q1: "📚😂 Can you turn my maths textbook into a funny comic book?", q2: "✏️💃 Can you make all the pencils in the classroom dance?" },
+        { name: "Doctor Strange", img: "Photos/Screenshot_20260404_141639_Pinterest.png", q1: "☁️🛏️ Can you create a giant fluffy cloud in my bedroom?", q2: "🌀🏍️ Can you open a portal to the motorcycle racing track in my bedroom?" },
+        { name: "Luke Skywalker", img: "Photos/Screenshot_20260404_141801_Pinterest.png", q1: "🌌🧸 Can you use the Force to make my toys float in the air?", q2: "⚔️✨ Can you give me a lightsaber that sparkles when I swing it?" },
+        { name: "Pikachu", img: "Photos/Screenshot_20260404_141826_Pinterest.png", q1: "⚡💡 Can you light up a light bulb with your Thunderbolt?", q2: "⚡🖊️😂 Can you use your lightning bolt-shaped tail to draw a funny picture for me?" },
+        { name: "Superman", img: "Photos/Screenshot_20260404_141855_Pinterest.png", q1: "🍿🏔️ Can you make a giant mountain of popcorn with your heat vision?", q2: "🎈💨🎉 Can you inflate all the balloons for a birthday party with your super breath?" },
+        { name: "Elsa", img: "Photos/Screenshot_20260404_142009_Pinterest.png", q1: "❄️🫧🧥 Can you make a tiny snowflake that never melts, so I can keep it in my pocket forever?", q2: "🍦☀️ Can you use your ice powers to keep my ice cream from melting on a sunny day?" }
+    ];
+
+    // Отрисовка карточек
+    const grid = document.getElementById("heroGrid");
+    heroes.forEach(hero => {
+        const card = document.createElement("div");
+        card.className = "hero-card";
+        
+        const img = document.createElement("img");
+        img.className = "hero-img";
+        img.alt = hero.name;
+        img.src = hero.img;
+        img.onerror = function() {
+            this.onerror = null;
+            this.src = "https://placehold.co/160x160?text=" + encodeURIComponent(hero.name) + "&font=georgia";
+        };
+        
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "hero-name";
+        nameDiv.innerText = hero.name;
+        
+        const q1div = document.createElement("div");
+        q1div.className = "question-item";
+        q1div.innerText = hero.q1;
+        
+        const q2div = document.createElement("div");
+        q2div.className = "question-item";
+        q2div.innerText = hero.q2;
+        
+        card.appendChild(img);
+        card.appendChild(nameDiv);
+        card.appendChild(q1div);
+        card.appendChild(q2div);
+        grid.appendChild(card);
+    });
+
+    // КНОПКА ПЕЧАТИ (самый надёжный способ для бумажной версии)
+    document.getElementById("printBtn").addEventListener("click", () => {
+        window.print();
+    });
+
+    // ДОПОЛНИТЕЛЬНАЯ КНОПКА (экспериментальный PDF через html2pdf)
+    // Она может работать или нет, но основная надежда на печать.
+    const pdfBtn = document.getElementById("pdfBtn");
+    if (pdfBtn) {
+        pdfBtn.addEventListener("click", async () => {
+            pdfBtn.disabled = true;
+            pdfBtn.innerText = "⏳ Генерация...";
+            try {
+                const element = document.getElementById("pdfCapture");
+                const opt = {
+                    margin: [0.5, 0.5, 0.5, 0.5],
+                    filename: 'hero_worksheet.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2.5, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak: { mode: 'none' }
+                };
+                await html2pdf().set(opt).from(element).save();
+            } catch(e) {
+                alert("Автоматический PDF не создался, используйте кнопку «Распечатать»");
+            } finally {
+                pdfBtn.disabled = false;
+                pdfBtn.innerText = "⬇️ Скачать PDF (экспериментально)";
+            }
+        });
+    }
+</script>
+</body>
+</html>
