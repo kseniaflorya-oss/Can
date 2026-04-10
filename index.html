@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Can you...? | Word order challenge (fully fixed)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #2c2a2a;
+            font-family: 'Georgia', 'Times New Roman', Times, serif;
+            padding: 20px;
+        }
+
+        .frame {
+            background-image: url('Photos/Screenshot_20260407_005538_Pinterest.jpg');
+            background-size: 33% auto;
+            background-repeat: repeat;
+            background-color: #fef3da;
+            border-radius: 48px;
+            padding: 1.5rem;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .worksheet-container {
+            background: rgba(250, 245, 235, 0.94);
+            border-radius: 32px;
+            padding: 1.5rem;
+            box-shadow: inset 0 0 0 1px rgba(255,245,200,0.6), 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .hero-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: #3d5a3d;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .nav-btn:hover { background: #2c482c; }
+        .hero-counter {
+            font-size: 1.2rem;
+            background: #eeddbb;
+            padding: 6px 16px;
+            border-radius: 40px;
+        }
+
+        .hero-card {
+            background: #fffef7;
+            border-radius: 48px;
+            padding: 1.2rem;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+            border: 1px solid #e2cfaa;
+        }
+        .hero-img {
+            width: 140px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #c9aa6f;
+            background: #f3e9ce;
+            margin-bottom: 10px;
+        }
+        .hero-name {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2b4f2b;
+        }
+
+        .game-area { margin: 20px 0; }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 15px 0 8px;
+            color: #3d5a3d;
+            border-left: 5px solid #b8860b;
+            padding-left: 12px;
+        }
+        .words-bank {
+            background: #fdf8ed;
+            border-radius: 32px;
+            padding: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            border: 1px dashed #c9aa6f;
+            min-height: 100px;
+        }
+        .word-chip {
+            background: #eeddbb;
+            padding: 10px 18px;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.05s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            user-select: none;
+            font-family: monospace;
+        }
+        .word-chip:hover { background: #e2cfaa; transform: scale(1.02); }
+        .sentence-area {
+            background: #fdf8ed;
+            border-radius: 32px;
+            padding: 18px;
+            min-height: 100px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            border: 2px solid #b8860b;
+        }
+        .sentence-word {
+            background: #c9e0c9;
+            padding: 10px 18px;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0 20px;
+            flex-wrap: wrap;
+        }
+        .green-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.2rem;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 8px #4caf50;
+        }
+        .green-btn:hover { background: #1b5e20; box-shadow: 0 0 12px #81c784; }
+        .reset-btn, .print-all-btn {
+            background: #b86b2c;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.2rem;
+            border-radius: 60px;
+            cursor: pointer;
+        }
+        .print-all-btn { background: #2c6e9e; }
+        .print-all-btn:hover { background: #1e4f6e; }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .overlay.active { visibility: visible; opacity: 1; }
+        .hint-card {
+            background: #fffef7;
+            border-radius: 48px;
+            padding: 1.5rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 35px black;
+            border: 2px solid gold;
+        }
+        .hint-card .hero-img { width: 100px; height: 100px; }
+        .correct-sentence {
+            font-size: 1.3rem;
+            background: #e8f0e8;
+            padding: 15px;
+            border-radius: 32px;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+        .close-hint {
+            background: #3d5a3d;
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+        }
+        .error-flash {
+            background-color: #ffaaaa !important;
+            box-shadow: 0 0 0 2px red;
+            transition: 0.05s;
+        }
+        @media (max-width: 700px) {
+            .word-chip, .sentence-word { font-size: 0.9rem; padding: 6px 12px; }
+            .hero-name { font-size: 1.6rem; }
+        }
+        @media print {
+            .nav-btn, .action-buttons, .hero-nav, .overlay, .print-all-btn { display: none !important; }
+            .frame { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .hero-card, .words-bank, .sentence-area { break-inside: avoid; }
+            body { background: white; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="frame">
+    <div class="worksheet-container">
+        <div class="hero-nav">
+            <button class="nav-btn" id="prevHeroBtn">◀ PREV</button>
+            <span class="hero-counter" id="heroCounter">Task 1 / 28</span>
+            <button class="nav-btn" id="nextHeroBtn">NEXT ▶</button>
+        </div>
+
+        <div class="hero-card" id="heroCard">
+            <img class="hero-img" id="heroImg" alt="hero">
+            <div class="hero-name" id="heroName">Thor</div>
+        </div>
+
+        <div class="game-area">
+            <div class="section-title">📦 Words in disorder (click to build)</div>
+            <div class="words-bank" id="wordsBank"></div>
+            <div class="section-title">✏️ Your sentence</div>
+            <div class="sentence-area" id="sentenceArea"></div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="green-btn" id="hintBtn">💡 SHOW ANSWER</button>
+            <button class="reset-btn" id="resetGameBtn">⟳ TRY AGAIN</button>
+            <button class="print-all-btn" id="printAllBtn">📑 SAVE ALL TASKS AS PDF</button>
+        </div>
+    </div>
+</div>
+
+<div id="hintOverlay" class="overlay">
+    <div class="hint-card">
+        <img id="hintImg" class="hero-img" alt="hero">
+        <div class="hero-name" id="hintName"></div>
+        <div class="correct-sentence" id="correctSentence"></div>
+        <button class="close-hint" id="closeHintBtn">OK, continue</button>
+    </div>
+</div>
+
+<script>
+    // ---------- ДАННЫЕ ВСЕХ ЗАДАНИЙ (28) - ПОЛНОСТЬЮ ВЫВЕРЕННЫЕ ----------
+    // Каждое задание содержит:
+    // - name, img
+    // - scrambled: массив слов в беспорядке (без эмодзи, без лишних символов)
+    // - correctWordsOrder: массив слов в ПРАВИЛЬНОМ порядке (без эмодзи)
+    // - correctFull: полный ответ с эмодзи для подсказки
+    const allTasks = [
+        // Thor 1
+        { name: "Thor", img: "Photos/Screenshot_20260410_124319_Pinterest.png",
+          scrambled: ["Can","you","charge","my","phone","just","by","holding","it","for","a","second?"],
+          correctWordsOrder: ["Can","you","charge","my","phone","just","by","holding","it","for","a","second?"],
+          correctFull: "Can you charge my phone just by holding it for a second?⚡📱" },
+        // Thor 2
+        { name: "Thor", img: "Photos/Screenshot_20260410_124319_Pinterest.png",
+          scrambled: ["Can","you","heat","up","a","cup","of","cold","milk","with","your","lightning","powers?"],
+          correctWordsOrder: ["Can","you","heat","up","a","cup","of","cold","milk","with","your","lightning","powers?"],
+          correctFull: "Can you heat up a cup of cold milk with your lightning powers? ⚡🥛" },
+        // Spider-Man 1
+        { name: "Spider-Man", img: "Photos/Screenshot_20260404_141131_Pinterest.png",
+          scrambled: ["Can","you","make","a","giant","spider-web","swing","in","my","bedroom?"],
+          correctWordsOrder: ["Can","you","make","a","giant","spider-web","swing","in","my","bedroom?"],
+          correctFull: "Can you make a giant spider-web swing in my bedroom?🕸️🛏️" },
+        // Spider-Man 2
+        { name: "Spider-Man", img: "Photos/Screenshot_20260404_141131_Pinterest.png",
+          scrambled: ["Can","you","use","your","webs","to","make","a","big","trampoline","for","us","to","jump","on?"],
+          correctWordsOrder: ["Can","you","use","your","webs","to","make","a","big","trampoline","for","us","to","jump","on?"],
+          correctFull: "Can you use your webs to make a big trampoline for us to jump on?🕸️🤸‍♂️" },
+        // Hulk 1
+        { name: "Hulk", img: "Photos/Screenshot_20260404_141201_Pinterest.png",
+          scrambled: ["Can","you","draw","a","tiny","picture","with","a","very","small","pencil?"],
+          correctWordsOrder: ["Can","you","draw","a","tiny","picture","with","a","very","small","pencil?"],
+          correctFull: "Can you draw a tiny picture with a very small pencil?✏️🎨🔍" },
+        // Hulk 2
+        { name: "Hulk", img: "Photos/Screenshot_20260404_141201_Pinterest.png",
+          scrambled: ["Can","you","hold","something","delicate","without","crushing","it?"],
+          correctWordsOrder: ["Can","you","hold","something","delicate","without","crushing","it?"],
+          correctFull: "Can you hold something delicate without crushing it?🤲🌷" },
+        // Iron Man 1
+        { name: "Iron Man", img: "Photos/Screenshot_20260404_141223_Pinterest.png",
+          scrambled: ["Can","you","turn","my","room","into","a","laser","tag","arena","with","your","repulsor","blasts?"],
+          correctWordsOrder: ["Can","you","turn","my","room","into","a","laser","tag","arena","with","your","repulsor","blasts?"],
+          correctFull: "Can you turn my room into a laser tag arena with your repulsor blasts? 🔫🏟️" },
+        // Iron Man 2
+        { name: "Iron Man", img: "Photos/Screenshot_20260404_141223_Pinterest.png",
+          scrambled: ["Can","you","make","my","bedroom","zero","gravity","with","your","arc","reactor?"],
+          correctWordsOrder: ["Can","you","make","my","bedroom","zero","gravity","with","your","arc","reactor?"],
+          correctFull: "Can you make my bedroom zero gravity with your arc reactor?⚛️🚀" },
+        // Black Panther 1
+        { name: "Black Panther", img: "Photos/Screenshot_20260404_141301_Pinterest.png",
+          scrambled: ["Can","you","turn","invisible","and","scare","my","cat","at","home?"],
+          correctWordsOrder: ["Can","you","turn","invisible","and","scare","my","cat","at","home?"],
+          correctFull: "Can you turn invisible and scare my cat at home?👻🐈" },
+        // Black Panther 2
+        { name: "Black Panther", img: "Photos/Screenshot_20260404_141301_Pinterest.png",
+          scrambled: ["Can","you","cut","a","pizza","into","perfect","slices","with","your","sharp","claws?"],
+          correctWordsOrder: ["Can","you","cut","a","pizza","into","perfect","slices","with","your","sharp","claws?"],
+          correctFull: "Can you cut a pizza into perfect slices with your sharp claws?🍕" },
+        // Ant-Man 1
+        { name: "Ant-Man", img: "Photos/Screenshot_20260404_141326_Pinterest.png",
+          scrambled: ["Can","you","get","very","small","and","drive","my","toy","car","around","the","house?"],
+          correctWordsOrder: ["Can","you","get","very","small","and","drive","my","toy","car","around","the","house?"],
+          correctFull: "Can you get very small and drive my toy car around the house?🚗🫨🏠" },
+        // Ant-Man 2
+        { name: "Ant-Man", img: "Photos/Screenshot_20260404_141326_Pinterest.png",
+          scrambled: ["Can","you","shrink","and","whisper","the","correct","answers","to","me","during","my","math","test?"],
+          correctWordsOrder: ["Can","you","shrink","and","whisper","the","correct","answers","to","me","during","my","math","test?"],
+          correctFull: "Can you shrink and whisper the correct answers to me during my math test? 🤏✨" },
+        // Evil Minion 1
+        { name: "Evil Minion", img: "Photos/Screenshot_20260404_141413_Pinterest.png",
+          scrambled: ["Can","you","sing","the","Banana","Song","all","day","long?"],
+          correctWordsOrder: ["Can","you","sing","the","Banana","Song","all","day","long?"],
+          correctFull: "Can you sing the \"Banana Song\" all day long?🍌🎵" },
+        // Evil Minion 2
+        { name: "Evil Minion", img: "Photos/Screenshot_20260404_141413_Pinterest.png",
+          scrambled: ["Can","you","hide","inside","my","backpack","and","scare","my","friends?"],
+          correctWordsOrder: ["Can","you","hide","inside","my","backpack","and","scare","my","friends?"],
+          correctFull: "Can you hide inside my backpack and scare my friends?🎒👻" },
+        // Harry Potter 1
+        { name: "Harry Potter", img: "Photos/Screenshot_20260404_141439_Pinterest.png",
+          scrambled: ["Can","you","turn","my","pencil","into","a","wand?"],
+          correctWordsOrder: ["Can","you","turn","my","pencil","into","a","wand?"],
+          correctFull: "Can you turn my pencil into a wand?✏️🪄" },
+        // Harry Potter 2
+        { name: "Harry Potter", img: "Photos/Screenshot_20260404_141439_Pinterest.png",
+          scrambled: ["Can","you","help","me","make","my","day","better","with","a","little","magic?"],
+          correctWordsOrder: ["Can","you","help","me","make","my","day","better","with","a","little","magic?"],
+          correctFull: "Can you help me make my day better with a little magic?✨😊" },
+        // Dobby 1
+        { name: "Dobby", img: "Photos/Screenshot_20260404_141504_Pinterest.png",
+          scrambled: ["Can","you","turn","my","maths","textbook","into","a","funny","comic","book?"],
+          correctWordsOrder: ["Can","you","turn","my","maths","textbook","into","a","funny","comic","book?"],
+          correctFull: "Can you turn my maths textbook into a funny comic book?📚😂" },
+        // Dobby 2
+        { name: "Dobby", img: "Photos/Screenshot_20260404_141504_Pinterest.png",
+          scrambled: ["Can","you","make","all","the","pencils","in","the","classroom","dance?"],
+          correctWordsOrder: ["Can","you","make","all","the","pencils","in","the","classroom","dance?"],
+          correctFull: "Can you make all the pencils in the classroom dance?✏️💃" },
+        // Doctor Strange 1
+        { name: "Doctor Strange", img: "Photos/Screenshot_20260404_141639_Pinterest.png",
+          scrambled: ["Can","you","create","a","giant","fluffy","cloud","in","my","bedroom?"],
+          correctWordsOrder: ["Can","you","create","a","giant","fluffy","cloud","in","my","bedroom?"],
+          correctFull: "Can you create a giant fluffy cloud in my bedroom? ☁️🛏️" },
+        // Doctor Strange 2
+        { name: "Doctor Strange", img: "Photos/Screenshot_20260404_141639_Pinterest.png",
+          scrambled: ["Can","you","open","a","portal","to","the","motorcycle","racing","track","in","my","bedroom?"],
+          correctWordsOrder: ["Can","you","open","a","portal","to","the","motorcycle","racing","track","in","my","bedroom?"],
+          correctFull: "Can you open a portal to the motorcycle racing track in my bedroom? 🌀🏍️" },
+        // Luke Skywalker 1
+        { name: "Luke Skywalker", img: "Photos/Screenshot_20260404_141801_Pinterest.png",
+          scrambled: ["Can","you","use","the","Force","to","make","my","toys","float","in","the","air?"],
+          correctWordsOrder: ["Can","you","use","the","Force","to","make","my","toys","float","in","the","air?"],
+          correctFull: "Can you use the Force to make my toys float in the air?🌌🧸" },
+        // Luke Skywalker 2
+        { name: "Luke Skywalker", img: "Photos/Screenshot_20260404_141801_Pinterest.png",
+          scrambled: ["Can","you","give","me","a","lightsaber","that","sparkles","when","I","swing","it?"],
+          correctWordsOrder: ["Can","you","give","me","a","lightsaber","that","sparkles","when","I","swing","it?"],
+          correctFull: "Can you give me a lightsaber that sparkles when I swing it?⚔️✨" },
+        // Pikachu 1
+        { name: "Pikachu", img: "Photos/Screenshot_20260404_141826_Pinterest.png",
+          scrambled: ["Can","you","light","up","a","light","bulb","with","your","Thunderbolt?"],
+          correctWordsOrder: ["Can","you","light","up","a","light","bulb","with","your","Thunderbolt?"],
+          correctFull: "Can you light up a light bulb with your Thunderbolt?⚡💡" },
+        // Pikachu 2
+        { name: "Pikachu", img: "Photos/Screenshot_20260404_141826_Pinterest.png",
+          scrambled: ["Can","you","use","your","lightning","bolt-shaped","tail","to","draw","a","funny","picture","for","me?"],
+          correctWordsOrder: ["Can","you","use","your","lightning","bolt-shaped","tail","to","draw","a","funny","picture","for","me?"],
+          correctFull: "Can you use your lightning bolt-shaped tail to draw a funny picture for me? ⚡🖊️😂" },
+        // Superman 1
+        { name: "Superman", img: "Photos/Screenshot_20260404_141855_Pinterest.png",
+          scrambled: ["Can","you","make","a","giant","mountain","of","popcorn","with","your","heat","vision?"],
+          correctWordsOrder: ["Can","you","make","a","giant","mountain","of","popcorn","with","your","heat","vision?"],
+          correctFull: "Can you make a giant mountain of popcorn with your heat vision?🍿🏔️" },
+        // Superman 2
+        { name: "Superman", img: "Photos/Screenshot_20260404_141855_Pinterest.png",
+          scrambled: ["Can","you","inflate","all","the","balloons","for","a","birthday","party","with","your","super","breath?"],
+          correctWordsOrder: ["Can","you","inflate","all","the","balloons","for","a","birthday","party","with","your","super","breath?"],
+          correctFull: "Can you inflate all the balloons for a birthday party with your super breath?🎈💨🎉" },
+        // Elsa 1
+        { name: "Elsa", img: "Photos/Screenshot_20260404_142009_Pinterest.png",
+          scrambled: ["Can","you","make","a","tiny","snowflake","that","never","melts,","so","I","can","keep","it","in","my","pocket","forever?"],
+          correctWordsOrder: ["Can","you","make","a","tiny","snowflake","that","never","melts,","so","I","can","keep","it","in","my","pocket","forever?"],
+          correctFull: "Can you make a tiny snowflake that never melts, so I can keep it in my pocket forever? ❄️🫧🧥" },
+        // Elsa 2
+        { name: "Elsa", img: "Photos/Screenshot_20260404_142009_Pinterest.png",
+          scrambled: ["Can","you","use","your","ice","powers","to","keep","my","ice","cream","from","melting","on","a","sunny","day?"],
+          correctWordsOrder: ["Can","you","use","your","ice","powers","to","keep","my","ice","cream","from","melting","on","a","sunny","day?"],
+          correctFull: "Can you use your ice powers to keep my ice cream from melting on a sunny day? 🍦☀️" }
+    ];
+
+    let currentIndex = 0;
+    let currentTask = null;
+    let availableWords = [];
+    let builtWords = [];
+    let correctSequence = [];
+
+    // DOM
+    const heroImg = document.getElementById('heroImg');
+    const heroNameSpan = document.getElementById('heroName');
+    const wordsBankDiv = document.getElementById('wordsBank');
+    const sentenceAreaDiv = document.getElementById('sentenceArea');
+    const prevBtn = document.getElementById('prevHeroBtn');
+    const nextBtn = document.getElementById('nextHeroBtn');
+    const resetBtn = document.getElementById('resetGameBtn');
+    const hintBtn = document.getElementById('hintBtn');
+    const printAllBtn = document.getElementById('printAllBtn');
+    const heroCounterSpan = document.getElementById('heroCounter');
+    const hintOverlay = document.getElementById('hintOverlay');
+    const hintImg = document.getElementById('hintImg');
+    const hintNameSpan = document.getElementById('hintName');
+    const correctSentenceSpan = document.getElementById('correctSentence');
+    const closeHintBtn = document.getElementById('closeHintBtn');
+
+    function loadTask(index) {
+        currentTask = allTasks[index];
+        heroImg.src = currentTask.img;
+        heroImg.onerror = () => { heroImg.src = "https://placehold.co/140x140?text=" + encodeURIComponent(currentTask.name); };
+        heroNameSpan.innerText = currentTask.name;
+        correctSequence = [...currentTask.correctWordsOrder];
+        availableWords = [...currentTask.scrambled];
+        builtWords = [];
+        renderGame();
+        heroCounterSpan.innerText = `Task ${index+1} / ${allTasks.length}`;
+    }
+
+    function renderGame() {
+        wordsBankDiv.innerHTML = '';
+        availableWords.forEach(word => {
+            const chip = document.createElement('div');
+            chip.className = 'word-chip';
+            chip.textContent = word;
+            chip.addEventListener('click', () => onWordClick(word));
+            wordsBankDiv.appendChild(chip);
+        });
+        sentenceAreaDiv.innerHTML = '';
+        builtWords.forEach(word => {
+            const placed = document.createElement('div');
+            placed.className = 'sentence-word';
+            placed.textContent = word;
+            sentenceAreaDiv.appendChild(placed);
+        });
+        sentenceAreaDiv.style.borderColor = (builtWords.length === correctSequence.length && builtWords.length > 0) ? "#4caf50" : "#b8860b";
+    }
+
+    function onWordClick(clickedWord) {
+        const nextExpected = correctSequence[builtWords.length];
+        if (!nextExpected) return; // уже готово
+        if (clickedWord === nextExpected) {
+            const idx = availableWords.indexOf(clickedWord);
+            if (idx !== -1) availableWords.splice(idx, 1);
+            builtWords.push(clickedWord);
+            renderGame();
+        } else {
+            const chips = document.querySelectorAll('.word-chip');
+            for (let chip of chips) {
+                if (chip.textContent === clickedWord) {
+                    chip.classList.add('error-flash');
+                    setTimeout(() => chip.classList.remove('error-flash'), 500);
+                    break;
+                }
+            }
+        }
+    }
+
+    function resetCurrent() {
+        availableWords = [...currentTask.scrambled];
+        builtWords = [];
+        renderGame();
+    }
+
+    function showHint() {
+        hintImg.src = currentTask.img;
+        hintImg.onerror = () => { hintImg.src = "https://placehold.co/100x100?text=" + encodeURIComponent(currentTask.name); };
+        hintNameSpan.innerText = currentTask.name;
+        correctSentenceSpan.innerText = currentTask.correctFull;
+        hintOverlay.classList.add('active');
+    }
+
+    function closeHint() { hintOverlay.classList.remove('active'); }
+
+    function nextTask() {
+        if (currentIndex + 1 < allTasks.length) {
+            currentIndex++;
+            loadTask(currentIndex);
+        } else alert("You've completed all tasks! Great job!");
+    }
+
+    function prevTask() {
+        if (currentIndex - 1 >= 0) {
+            currentIndex--;
+            loadTask(currentIndex);
+        } else alert("This is the first task.");
+    }
+
+    // PDF генерация: каждая карточка на отдельной странице A4
+    async function generateFullPDF() {
+        const container = document.createElement('div');
+        container.style.backgroundColor = '#fef3da';
+        container.style.fontFamily = 'Georgia, Times New Roman, serif';
+        container.style.padding = '20px';
+        container.style.backgroundImage = "url('Photos/Screenshot_20260407_005538_Pinterest.jpg')";
+        container.style.backgroundSize = '33% auto';
+        container.style.backgroundRepeat = 'repeat';
+        
+        for (let i = 0; i < allTasks.length; i++) {
+            const task = allTasks[i];
+            const card = document.createElement('div');
+            card.style.background = '#fffef7';
+            card.style.borderRadius = '32px';
+            card.style.padding = '1.5rem';
+            card.style.margin = '0 auto 20px auto';
+            card.style.border = '1px solid #e2cfaa';
+            card.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+            card.style.width = '100%';
+            card.style.maxWidth = '800px';
+            card.style.pageBreakAfter = 'always'; // каждая карточка на новой странице
+            card.style.breakInside = 'avoid';
+            
+            // Фото и имя
+            const header = document.createElement('div');
+            header.style.textAlign = 'center';
+            const img = document.createElement('img');
+            img.src = task.img;
+            img.style.width = '120px';
+            img.style.height = '120px';
+            img.style.borderRadius = '50%';
+            img.style.objectFit = 'cover';
+            img.style.border = '3px solid #c9aa6f';
+            img.onerror = () => { img.src = "https://placehold.co/120x120?text=" + encodeURIComponent(task.name); };
+            const name = document.createElement('h2');
+            name.textContent = task.name;
+            name.style.color = '#2b4f2b';
+            name.style.margin = '10px 0';
+            header.appendChild(img);
+            header.appendChild(name);
+            
+            // Слова в беспорядке
+            const disorderDiv = document.createElement('div');
+            disorderDiv.style.marginTop = '20px';
+            disorderDiv.innerHTML = '<strong>📦 Words in disorder:</strong><br>';
+            const wordsContainer = document.createElement('div');
+            wordsContainer.style.display = 'flex';
+            wordsContainer.style.flexWrap = 'wrap';
+            wordsContainer.style.gap = '10px';
+            wordsContainer.style.marginTop = '10px';
+            task.scrambled.forEach(w => {
+                const span = document.createElement('span');
+                span.textContent = w;
+                span.style.background = '#eeddbb';
+                span.style.padding = '8px 15px';
+                span.style.borderRadius = '40px';
+                span.style.fontSize = '1rem';
+                wordsContainer.appendChild(span);
+            });
+            disorderDiv.appendChild(wordsContainer);
+            
+            // Правильный ответ
+            const correctDiv = document.createElement('div');
+            correctDiv.style.marginTop = '20px';
+            correctDiv.style.background = '#e8f0e8';
+            correctDiv.style.padding = '12px';
+            correctDiv.style.borderRadius = '28px';
+            correctDiv.innerHTML = `<strong>✅ Correct answer:</strong><br>${task.correctFull}`;
+            
+            card.appendChild(header);
+            card.appendChild(disorderDiv);
+            card.appendChild(correctDiv);
+            container.appendChild(card);
+        }
+        
+        document.body.appendChild(container);
+        const opt = {
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: 'Can_You_Word_Order_All_Tasks.pdf',
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2.5, useCORS: true, backgroundColor: '#fef3da', letterRendering: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: 'avoid-all' }
+        };
+        try {
+            await html2pdf().set(opt).from(container).save();
+        } catch(e) {
+            alert("PDF generation failed, but you can use browser print (Ctrl+P) to save as PDF.");
+        }
+        document.body.removeChild(container);
+    }
+
+    function init() {
+        loadTask(0);
+        prevBtn.addEventListener('click', prevTask);
+        nextBtn.addEventListener('click', nextTask);
+        resetBtn.addEventListener('click', resetCurrent);
+        hintBtn.addEventListener('click', showHint);
+        closeHintBtn.addEventListener('click', closeHint);
+        printAllBtn.addEventListener('click', generateFullPDF);
+        hintOverlay.addEventListener('click', (e) => { if (e.target === hintOverlay) closeHint(); });
+    }
+    init();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</body>
+</html>
